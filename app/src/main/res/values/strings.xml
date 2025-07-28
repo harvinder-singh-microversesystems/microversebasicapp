@@ -1,5 +1,12 @@
 <resources>
-    <string name="app_name">Basic Android App</string>
+    <string name="app_name">Location Reminders</string>
     <string name="hello_world">Hello, Android World!</string>
     <string name="click_me">Click Me!</string>
+    <string name="add_reminder">Add Reminder</string>
+    <string name="no_reminders">No reminders yet.\nTap + to create your first location reminder!</string>
+    <string name="reminder_title">Reminder Title</string>
+    <string name="location_address">Location (e.g., Costco Wayne NJ)</string>
+    <string name="reminder_note">Reminder Note</string>
+    <string name="save_reminder">Save Reminder</string>
+    <string name="delete">Delete</string>
 </resources>
