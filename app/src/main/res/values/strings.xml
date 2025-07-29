@@ -1,12 +1,9 @@
 <resources>
-    <string name="app_name">Location Reminders</string>
-    <string name="hello_world">Hello, Android World!</string>
-    <string name="click_me">Click Me!</string>
-    <string name="add_reminder">Add Reminder</string>
-    <string name="no_reminders">No reminders yet.\nTap + to create your first location reminder!</string>
-    <string name="reminder_title">Reminder Title</string>
-    <string name="location_address">Location (e.g., Costco Wayne NJ)</string>
-    <string name="reminder_note">Reminder Note</string>
-    <string name="save_reminder">Save Reminder</string>
-    <string name="delete">Delete</string>
+    <string name="app_name">Screen Share</string>
+    <string name="start_screen_sharing">Start Screen Sharing</string>
+    <string name="stop_screen_sharing">Stop Screen Sharing</string>
+    <string name="status_stopped">Status: Stopped</string>
+    <string name="status_running">Status: Running</string>
+    <string name="web_address">Open in browser: %1$s</string>
+    <string name="permission_required">Screen capture permission required</string>
 </resources>
