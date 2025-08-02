@@ -1,40 +1,28 @@
 package com.example.basicandroidapp;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.location.Location;
+import androidx.appcompat.app.AlertDialog;
+
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Looper;
-import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.webkit.WebChromeClient;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.Priority;
+
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String TAG = "MainActivity";
-    private static final int REQUEST_CODE_LOCATION_PERMISSION = 1000;
-    
-    private Button btnGetLocation;
-    private Button btnStopLocation;
-    private TextView tvStatus;
-    private TextView tvLatitude;
-    private TextView tvLongitude;
-    private TextView tvAltitude;
-    
-    private FusedLocationProviderClient fusedLocationClient;
-    private LocationCallback locationCallback;
-    private LocationRequest locationRequest;
-    private boolean isLocationUpdatesActive = false;
+    private WebView webView;
+    private EditText addressBar;
+    private Button btnBack, btnForward, btnRefresh, btnHome, btnGo, btnBookmark, btnSettings;
+    private SharedPreferences bookmarks;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,135 +30,217 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         
         initViews();
-        initLocationServices();
+        setupWebView();
+        setupEventListeners();
+        loadHomePage();
     }
     
     private void initViews() {
-        btnGetLocation = findViewById(R.id.btnGetLocation);
-        btnStopLocation = findViewById(R.id.btnStopLocation);
-        tvStatus = findViewById(R.id.tvStatus);
-        tvLatitude = findViewById(R.id.tvLatitude);
-        tvLongitude = findViewById(R.id.tvLongitude);
-        tvAltitude = findViewById(R.id.tvAltitude);
+        webView = findViewById(R.id.webView);
+        addressBar = findViewById(R.id.etAddressBar);
+        btnBack = findViewById(R.id.btnBack);
+        btnForward = findViewById(R.id.btnForward);
+        btnRefresh = findViewById(R.id.btnRefresh);
+        btnHome = findViewById(R.id.btnHome);
+        btnGo = findViewById(R.id.btnGo);
+        btnBookmark = findViewById(R.id.btnBookmark);
+        btnSettings = findViewById(R.id.btnSettings);
         
-        btnGetLocation.setOnClickListener(new View.OnClickListener() {
+        bookmarks = getSharedPreferences("HarvinderBrowserBookmarks", MODE_PRIVATE);
+    }
+    
+    private void setupWebView() {
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setDomStorageEnabled(true);
+        webView.getSettings().setLoadWithOverviewMode(true);
+        webView.getSettings().setUseWideViewPort(true);
+        webView.getSettings().setBuiltInZoomControls(true);
+        webView.getSettings().setDisplayZoomControls(false);
+        
+        webView.setWebViewClient(new WebViewClient() {
             @Override
-            public void onClick(View v) {
-                requestLocationUpdates();
+            public void onPageFinished(WebView view, String url) {
+                addressBar.setText(url);
+                updateNavigationButtons();
+            }
+            
+            @Override
+            public void onPageStarted(WebView view, String url, android.graphics.Bitmap favicon) {
+                addressBar.setText(url);
             }
         });
         
-        btnStopLocation.setOnClickListener(new View.OnClickListener() {
+        webView.setWebChromeClient(new WebChromeClient() {
             @Override
-            public void onClick(View v) {
-                stopLocationUpdates();
+            public void onProgressChanged(WebView view, int newProgress) {
+                if (newProgress == 100) {
+                    updateNavigationButtons();
+                }
+            }
+        });
+    }
+    
+    private void setupEventListeners() {
+        btnBack.setOnClickListener(v -> goBack());
+        btnForward.setOnClickListener(v -> goForward());
+        btnRefresh.setOnClickListener(v -> refresh());
+        btnHome.setOnClickListener(v -> goHome());
+        btnGo.setOnClickListener(v -> navigate());
+        btnBookmark.setOnClickListener(v -> addBookmark());
+        btnSettings.setOnClickListener(v -> showSettings());
+        
+        addressBar.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_GO || 
+                    (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                    navigate();
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+    
+    private void navigate() {
+        String url = addressBar.getText().toString().trim();
+        if (url.isEmpty()) return;
+        
+        if (!url.contains("://")) {
+            if (url.contains(".") && !url.contains(" ")) {
+                url = "https://" + url;
+            } else {
+                url = "https://www.google.com/search?q=" + url.replace(" ", "+");
+            }
+        }
+        
+        webView.loadUrl(url);
+    }
+    
+    private void goBack() {
+        if (webView.canGoBack()) {
+            webView.goBack();
+        }
+    }
+    
+    private void goForward() {
+        if (webView.canGoForward()) {
+            webView.goForward();
+        }
+    }
+    
+    private void refresh() {
+        webView.reload();
+    }
+    
+    private void goHome() {
+        webView.loadUrl("https://www.google.com");
+        addressBar.setText("https://www.google.com");
+    }
+    
+    private void updateNavigationButtons() {
+        btnBack.setEnabled(webView.canGoBack());
+        btnForward.setEnabled(webView.canGoForward());
+    }
+    
+    private void addBookmark() {
+        String url = webView.getUrl();
+        String title = webView.getTitle();
+        if (url != null && title != null) {
+            SharedPreferences.Editor editor = bookmarks.edit();
+            editor.putString(title, url);
+            editor.apply();
+            Toast.makeText(this, getString(R.string.bookmark_added), Toast.LENGTH_SHORT).show();
+        }
+    }
+    
+    private void showSettings() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Settings");
+        
+        String[] options = {"View Bookmarks", "Clear Browsing Data", "About"};
+        builder.setItems(options, (dialog, which) -> {
+            switch (which) {
+                case 0:
+                    showBookmarks();
+                    break;
+                case 1:
+                    clearBrowsingData();
+                    break;
+                case 2:
+                    showAbout();
+                    break;
             }
         });
         
-        updateUI(false);
-        resetLocationDisplay();
+        builder.show();
     }
     
-    private void initLocationServices() {
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        
-        locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 2000)
-                .setWaitForAccurateLocation(false)
-                .setMinUpdateIntervalMillis(1000)
-                .setMaxUpdateDelayMillis(5000)
-                .build();
-        
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                if (locationResult == null) {
-                    return;
-                }
-                for (Location location : locationResult.getLocations()) {
-                    updateLocationDisplay(location);
-                }
-            }
-        };
-    }
-    
-    private void requestLocationUpdates() {
-        if (!checkLocationPermissions()) {
-            requestLocationPermissions();
+    private void showBookmarks() {
+        Map<String, ?> bookmarkMap = bookmarks.getAll();
+        if (bookmarkMap.isEmpty()) {
+            Toast.makeText(this, "No bookmarks saved", Toast.LENGTH_SHORT).show();
             return;
         }
         
-        try {
-            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
-            isLocationUpdatesActive = true;
-            updateUI(true);
-        } catch (SecurityException e) {
-            Log.e(TAG, "Location permission not granted", e);
-            Toast.makeText(this, getString(R.string.permission_required), Toast.LENGTH_SHORT).show();
-        }
+        String[] titles = bookmarkMap.keySet().toArray(new String[0]);
+        
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Bookmarks");
+        builder.setItems(titles, (dialog, which) -> {
+            String selectedTitle = titles[which];
+            String url = bookmarks.getString(selectedTitle, "");
+            if (!url.isEmpty()) {
+                webView.loadUrl(url);
+                addressBar.setText(url);
+            }
+        });
+        
+        builder.setNegativeButton("Close", null);
+        builder.show();
     }
     
-    private void stopLocationUpdates() {
-        if (isLocationUpdatesActive) {
-            fusedLocationClient.removeLocationUpdates(locationCallback);
-            isLocationUpdatesActive = false;
-            updateUI(false);
-        }
+    private void clearBrowsingData() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Clear Browsing Data");
+        builder.setMessage("This will clear your browsing history, cache, and cookies. Continue?");
+        builder.setPositiveButton("Clear", (dialog, which) -> {
+            webView.clearHistory();
+            webView.clearCache(true);
+            webView.clearFormData();
+            Toast.makeText(this, "Browsing data cleared", Toast.LENGTH_SHORT).show();
+        });
+        builder.setNegativeButton("Cancel", null);
+        builder.show();
     }
     
-    private boolean checkLocationPermissions() {
-        return ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-               ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+    private void showAbout() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("About Harvinder Browser");
+        builder.setMessage("Harvinder Browser v1.0.0\n\nA custom browser for Android\nCreated by Harvinder Singh\n\nBuilt with Android WebView");
+        builder.setPositiveButton("OK", null);
+        builder.show();
     }
     
-    private void requestLocationPermissions() {
-        ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-                REQUEST_CODE_LOCATION_PERMISSION);
+    private void loadHomePage() {
+        webView.loadUrl("https://www.google.com");
+        addressBar.setText("https://www.google.com");
     }
     
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        
-        if (requestCode == REQUEST_CODE_LOCATION_PERMISSION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                requestLocationUpdates();
-            } else {
-                Toast.makeText(this, getString(R.string.permission_required), Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-    
-    private void updateLocationDisplay(Location location) {
-        double latitude = location.getLatitude();
-        double longitude = location.getLongitude();
-        double altitude = location.hasAltitude() ? location.getAltitude() : 0.0;
-        
-        tvLatitude.setText(getString(R.string.latitude, String.format("%.6f", latitude)));
-        tvLongitude.setText(getString(R.string.longitude, String.format("%.6f", longitude)));
-        
-        if (location.hasAltitude()) {
-            tvAltitude.setText(getString(R.string.altitude, String.format("%.1f", altitude)));
+    public void onBackPressed() {
+        if (webView.canGoBack()) {
+            webView.goBack();
         } else {
-            tvAltitude.setText(getString(R.string.altitude, "N/A"));
+            super.onBackPressed();
         }
-    }
-    
-    private void resetLocationDisplay() {
-        tvLatitude.setText(getString(R.string.latitude, "N/A"));
-        tvLongitude.setText(getString(R.string.longitude, "N/A"));
-        tvAltitude.setText(getString(R.string.altitude, "N/A"));
-    }
-    
-    private void updateUI(boolean isRunning) {
-        btnGetLocation.setEnabled(!isRunning);
-        btnStopLocation.setEnabled(isRunning);
-        tvStatus.setText(isRunning ? getString(R.string.status_running) : getString(R.string.status_stopped));
     }
     
     @Override
     protected void onDestroy() {
-        stopLocationUpdates();
+        if (webView != null) {
+            webView.destroy();
+        }
         super.onDestroy();
     }
 }

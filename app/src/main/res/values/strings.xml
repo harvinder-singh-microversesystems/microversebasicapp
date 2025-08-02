@@ -1,12 +1,15 @@
 <resources>
-    <string name="app_name">GPS Location</string>
-    <string name="get_location">Get Current Location</string>
-    <string name="stop_location">Stop Location Updates</string>
-    <string name="status_stopped">Status: Stopped</string>
-    <string name="status_running">Status: Getting Location</string>
-    <string name="latitude">Latitude: %1$s</string>
-    <string name="longitude">Longitude: %1$s</string>
-    <string name="altitude">Altitude: %1$s meters</string>
-    <string name="permission_required">Location permission required</string>
-    <string name="location_unavailable">Location unavailable</string>
+    <string name="app_name">Harvinder Browser</string>
+    <string name="address_bar_hint">Enter URL or search...</string>
+    <string name="go_button">Go</string>
+    <string name="bookmark_button">⭐ Bookmark</string>
+    <string name="settings_button">⚙️ Settings</string>
+    <string name="bookmark_added">Bookmark added</string>
+    <string name="loading">Loading...</string>
+    <string name="error_loading">Error loading page</string>
+    <string name="home_page">Home</string>
+    <string name="back_button">Back</string>
+    <string name="forward_button">Forward</string>
+    <string name="refresh_button">Refresh</string>
+    <string name="home_button">Home</string>
 </resources>

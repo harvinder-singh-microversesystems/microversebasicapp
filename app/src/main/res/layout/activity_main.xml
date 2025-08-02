@@ -2,63 +2,105 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:orientation="vertical">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/app_name"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:layout_marginBottom="32dp" />
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:background="@android:color/white"
+        android:elevation="4dp">
+        
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:text="←"
+            android:textSize="18sp"
+            android:layout_margin="2dp"
+            android:contentDescription="@string/back_button" />
+            
+        <Button
+            android:id="@+id/btnForward"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:text="→"
+            android:textSize="18sp"
+            android:layout_margin="2dp"
+            android:contentDescription="@string/forward_button" />
+            
+        <Button
+            android:id="@+id/btnRefresh"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:text="⟳"
+            android:textSize="18sp"
+            android:layout_margin="2dp"
+            android:contentDescription="@string/refresh_button" />
+            
+        <Button
+            android:id="@+id/btnHome"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:text="🏠"
+            android:textSize="16sp"
+            android:layout_margin="2dp"
+            android:contentDescription="@string/home_button" />
+        
+        <EditText
+            android:id="@+id/etAddressBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/address_bar_hint"
+            android:layout_margin="4dp"
+            android:padding="12dp"
+            android:background="@android:drawable/edit_text"
+            android:inputType="textUri"
+            android:imeOptions="actionGo"
+            android:singleLine="true" />
+            
+        <Button
+            android:id="@+id/btnGo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/go_button"
+            android:layout_margin="2dp" />
+    </LinearLayout>
 
-    <Button
-        android:id="@+id/btnGetLocation"
+    <WebView
+        android:id="@+id/webView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/get_location"
-        android:layout_marginBottom="16dp" />
-
-    <Button
-        android:id="@+id/btnStopLocation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/stop_location"
-        android:enabled="false"
-        android:layout_marginBottom="32dp" />
-
-    <TextView
-        android:id="@+id/tvStatus"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/status_stopped"
-        android:textSize="16sp"
-        android:layout_marginBottom="24dp" />
-
-    <TextView
-        android:id="@+id/tvLatitude"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/latitude"
-        android:textSize="18sp"
-        android:layout_marginBottom="16dp" />
-
-    <TextView
-        android:id="@+id/tvLongitude"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/longitude"
-        android:textSize="18sp"
-        android:layout_marginBottom="16dp" />
-
-    <TextView
-        android:id="@+id/tvAltitude"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/altitude"
-        android:textSize="18sp"
-        android:layout_marginBottom="16dp" />
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:background="@android:color/white"
+        android:elevation="4dp">
+        
+        <Button
+            android:id="@+id/btnBookmark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/bookmark_button"
+            android:layout_margin="4dp" />
+            
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+            
+        <Button
+            android:id="@+id/btnSettings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_button"
+            android:layout_margin="4dp" />
+    </LinearLayout>
 
 </LinearLayout>
