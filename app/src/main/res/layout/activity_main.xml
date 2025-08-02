@@ -15,17 +15,17 @@
         android:layout_marginBottom="32dp" />
 
     <Button
-        android:id="@+id/btnStartCapture"
+        android:id="@+id/btnGetLocation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/start_screen_sharing"
+        android:text="@string/get_location"
         android:layout_marginBottom="16dp" />
 
     <Button
-        android:id="@+id/btnStopCapture"
+        android:id="@+id/btnStopLocation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/stop_screen_sharing"
+        android:text="@string/stop_location"
         android:enabled="false"
         android:layout_marginBottom="32dp" />
 
@@ -35,15 +35,30 @@
         android:layout_height="wrap_content"
         android:text="@string/status_stopped"
         android:textSize="16sp"
+        android:layout_marginBottom="24dp" />
+
+    <TextView
+        android:id="@+id/tvLatitude"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/latitude"
+        android:textSize="18sp"
         android:layout_marginBottom="16dp" />
 
     <TextView
-        android:id="@+id/tvWebAddress"
+        android:id="@+id/tvLongitude"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text=""
-        android:textSize="14sp"
-        android:textIsSelectable="true"
-        android:autoLink="web" />
+        android:text="@string/longitude"
+        android:textSize="18sp"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:id="@+id/tvAltitude"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/altitude"
+        android:textSize="18sp"
+        android:layout_marginBottom="16dp" />
 
 </LinearLayout>

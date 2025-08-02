@@ -1,9 +1,12 @@
 <resources>
-    <string name="app_name">Screen Share</string>
-    <string name="start_screen_sharing">Start Screen Sharing</string>
-    <string name="stop_screen_sharing">Stop Screen Sharing</string>
+    <string name="app_name">GPS Location</string>
+    <string name="get_location">Get Current Location</string>
+    <string name="stop_location">Stop Location Updates</string>
     <string name="status_stopped">Status: Stopped</string>
-    <string name="status_running">Status: Running</string>
-    <string name="web_address">Open in browser: %1$s</string>
-    <string name="permission_required">Screen capture permission required</string>
+    <string name="status_running">Status: Getting Location</string>
+    <string name="latitude">Latitude: %1$s</string>
+    <string name="longitude">Longitude: %1$s</string>
+    <string name="altitude">Altitude: %1$s meters</string>
+    <string name="permission_required">Location permission required</string>
+    <string name="location_unavailable">Location unavailable</string>
 </resources>
