@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
             public void onPageFinished(WebView view, String url) {
                 addressBar.setText(url);
                 updateNavigationButtons();
+                injectAdBlockingScript(view);
             }
             
             @Override
@@ -217,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
     private void showAbout() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("About Harvinder Browser");
-        builder.setMessage("Harvinder Browser v1.0.0\n\nA custom browser for Android\nCreated by Harvinder Singh\n\nBuilt with Android WebView");
+        builder.setMessage("Harvinder Browser v1.0.0\n\nA custom browser for Android\nCreated by Harvinder Singh\n\nBuilt with Android WebView\n\nFeatures:\n• Ad blocking (ads resized to 10x10 pixels)\n• JavaScript support\n• Bookmark management\n• Full web browsing");
         builder.setPositiveButton("OK", null);
         builder.show();
     }
@@ -225,6 +226,73 @@ public class MainActivity extends AppCompatActivity {
     private void loadHomePage() {
         webView.loadUrl("https://www.google.com");
         addressBar.setText("https://www.google.com");
+    }
+    
+    private void injectAdBlockingScript(WebView webView) {
+        String adBlockingScript = 
+            "(function() {" +
+            "  var adSelectors = [" +
+            "    'iframe[src*=\"ads\"]'," +
+            "    'iframe[src*=\"doubleclick\"]'," +
+            "    'iframe[src*=\"googlesyndication\"]'," +
+            "    'iframe[src*=\"googleadservices\"]'," +
+            "    'div[id*=\"ad\"]'," +
+            "    'div[class*=\"ad\"]'," +
+            "    'div[class*=\"advertisement\"]'," +
+            "    'div[class*=\"banner\"]'," +
+            "    'div[id*=\"banner\"]'," +
+            "    'div[class*=\"sponsor\"]'," +
+            "    'div[id*=\"sponsor\"]'," +
+            "    'ins.adsbygoogle'," +
+            "    '[data-ad-slot]'," +
+            "    '[data-ad-client]'," +
+            "    '.adsbox'," +
+            "    '.advertisement'," +
+            "    '.google-ads'," +
+            "    '.sponsored'," +
+            "    '.ad-container'," +
+            "    '.ad-banner'," +
+            "    '.ad-wrapper'" +
+            "  ];" +
+            "  " +
+            "  function resizeAds() {" +
+            "    adSelectors.forEach(function(selector) {" +
+            "      var elements = document.querySelectorAll(selector);" +
+            "      elements.forEach(function(element) {" +
+            "        element.style.width = '10px !important';" +
+            "        element.style.height = '10px !important';" +
+            "        element.style.maxWidth = '10px !important';" +
+            "        element.style.maxHeight = '10px !important';" +
+            "        element.style.minWidth = '10px !important';" +
+            "        element.style.minHeight = '10px !important';" +
+            "        element.style.overflow = 'hidden !important';" +
+            "        element.style.visibility = 'visible !important';" +
+            "        element.style.display = 'block !important';" +
+            "      });" +
+            "    });" +
+            "  }" +
+            "  " +
+            "  resizeAds();" +
+            "  " +
+            "  var observer = new MutationObserver(function(mutations) {" +
+            "    mutations.forEach(function(mutation) {" +
+            "      if (mutation.type === 'childList') {" +
+            "        resizeAds();" +
+            "      }" +
+            "    });" +
+            "  });" +
+            "  " +
+            "  observer.observe(document.body, {" +
+            "    childList: true," +
+            "    subtree: true" +
+            "  });" +
+            "  " +
+            "  setTimeout(resizeAds, 1000);" +
+            "  setTimeout(resizeAds, 3000);" +
+            "  setTimeout(resizeAds, 5000);" +
+            "})();";
+        
+        webView.evaluateJavascript(adBlockingScript, null);
     }
     
     @Override
